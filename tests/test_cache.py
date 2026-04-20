@@ -67,13 +67,29 @@ def test_http_error_raises(tmp_cache):
         cache.cached_download(url)
 
 
-def test_cache_path_includes_extension(tmp_cache):
-    p1 = cache._cache_path("https://example.com/foo.rds")
-    p2 = cache._cache_path("https://example.com/foo.rds?download=")
-    assert p1.suffix == ".rds"
-    assert p2.suffix == ".rds"
-    # Different URLs (with vs without query) hash to different files
-    assert p1 != p2
+def test_cache_path_uses_readable_basename(tmp_cache):
+    p = cache._cache_path(
+        "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/"
+        "federal_elections/county_level/final/federal_cty_harm.rds"
+    )
+    assert p.name == "federal_cty_harm.rds"
+
+
+def test_cache_path_strips_query_string(tmp_cache):
+    base = (
+        "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/"
+        "federal_elections/county_level/final/federal_cty_harm.rds"
+    )
+    p1 = cache._cache_path(base)
+    p2 = cache._cache_path(base + "?download=")
+    assert p1 == p2
+    assert p1.name == "federal_cty_harm.rds"
+
+
+def test_cache_path_falls_back_for_extensionless_url(tmp_cache):
+    p = cache._cache_path("https://example.com/no-extension")
+    assert p.suffix == ".bin"
+    assert len(p.stem) == 40  # sha1 hex digest length
 
 
 def test_cache_dir_is_creatable():

@@ -8,9 +8,11 @@ crosswalks. Python port of the [gerda R package](https://github.com/hhilbig/gerd
 ## Install
 
 ```bash
-pip install gerda                 # base install (pandas)
-pip install "gerda[polars]"       # adds polars output support
+pip install git+https://github.com/hhilbig/gerda-py
+pip install "gerda[polars] @ git+https://github.com/hhilbig/gerda-py"
 ```
+
+A PyPI release is planned; once published, `pip install gerda` will work.
 
 Requires Python 3.11+.
 
@@ -33,7 +35,17 @@ df = gerda.load("federal_cty_harm", refresh=True)
 ```
 
 Files are downloaded from the [GERDA data repository](https://github.com/awiedem/german_election_data)
-and cached under `~/.cache/gerda/`. RDS files are read with
+and cached in a platform-specific user cache directory: `~/.cache/gerda/` on
+Linux, `~/Library/Caches/gerda/` on macOS, `%LOCALAPPDATA%\gerda\Cache\gerda`
+on Windows. The exact path is available at runtime:
+
+```python
+from gerda.cache import cache_dir
+print(cache_dir())
+```
+
+Cached files keep their original dataset names (e.g. `federal_cty_harm.rds`),
+so it's safe to inspect or prune the cache by hand. RDS files are read with
 [`pyreadr`](https://github.com/ofajardo/pyreadr); column dtypes (notably
 string AGS codes with leading zeros) are preserved automatically.
 

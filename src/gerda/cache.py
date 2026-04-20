@@ -18,9 +18,12 @@ def cache_dir() -> Path:
 
 
 def _cache_path(url: str) -> Path:
-    suffix = Path(url.split("?", 1)[0]).suffix or ".bin"
-    digest = hashlib.sha1(url.encode("utf-8")).hexdigest()
-    return cache_dir() / f"{digest}{suffix}"
+    name = Path(url.split("?", 1)[0]).name
+    if not name or not Path(name).suffix:
+        # Defensive fallback; catalog entries always have a usable basename.
+        digest = hashlib.sha1(url.encode("utf-8")).hexdigest()
+        return cache_dir() / f"{digest}.bin"
+    return cache_dir() / name
 
 
 def cached_download(url: str, *, refresh: bool = False, verbose: bool = False) -> Path:
