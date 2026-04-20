@@ -1,0 +1,60 @@
+[project]
+name = "gerda"
+version = "0.1.0"
+description = "German Election Database (GERDA): lightweight Python loader for the GERDA datasets."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Hanno Hilbig", email = "hhilbig@ucdavis.edu" },
+]
+requires-python = ">=3.11"
+keywords = ["germany", "elections", "political-science", "data"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "pandas>=2.0",
+    "pyarrow>=14",
+    "pyreadr>=0.5",
+    "requests>=2.31",
+    "rapidfuzz>=3.5",
+    "platformdirs>=4",
+]
+
+[project.optional-dependencies]
+polars = ["polars>=1.0"]
+
+[project.urls]
+Homepage = "https://www.german-elections.com"
+Repository = "https://github.com/hhilbig/gerda-py"
+"R package" = "https://github.com/hhilbig/gerda"
+"Data repository" = "https://github.com/awiedem/german_election_data"
+Paper = "https://doi.org/10.1038/s41597-025-04811-5"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "responses>=0.25",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "gerda"
+module-root = "src"
+
+[tool.pytest.ini_options]
+markers = [
+    "network: tests that require live network access (opt-in: pytest -m network)",
+]
+addopts = "-m 'not network'"
+testpaths = ["tests"]

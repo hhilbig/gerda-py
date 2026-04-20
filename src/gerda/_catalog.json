@@ -1,0 +1,197 @@
+[
+  {
+    "name": "municipal_unharm",
+    "description": "Local elections at the municipal level (1990-2020, unharmonized).",
+    "path": "municipal_elections/final/municipal_unharm"
+  },
+  {
+    "name": "municipal_harm",
+    "description": "Local elections at the municipal level (1990-2020, harmonized).",
+    "path": "municipal_elections/final/municipal_harm"
+  },
+  {
+    "name": "state_unharm",
+    "description": "State elections at the municipal level (2006-2019, unharmonized).",
+    "path": "state_elections/final/state_unharm"
+  },
+  {
+    "name": "state_harm",
+    "description": "State elections at the municipal level (2006-2019, harmonized).",
+    "path": "state_elections/final/state_harm"
+  },
+  {
+    "name": "federal_muni_raw",
+    "description": "Federal elections at the municipal level (1980-2025, raw data).",
+    "path": "federal_elections/municipality_level/final/federal_muni_raw"
+  },
+  {
+    "name": "federal_muni_unharm",
+    "description": "Federal elections at the municipal level (1980-2025, unharmonized).",
+    "path": "federal_elections/municipality_level/final/federal_muni_unharm"
+  },
+  {
+    "name": "federal_muni_harm_21",
+    "description": "Federal elections at the municipal level (1990-2025, harmonized to 2021 boundaries).",
+    "path": "federal_elections/municipality_level/final/federal_muni_harm_21"
+  },
+  {
+    "name": "federal_muni_harm_25",
+    "description": "Federal elections at the municipal level (1990-2025, harmonized to 2025 boundaries).",
+    "path": "federal_elections/municipality_level/final/federal_muni_harm_25"
+  },
+  {
+    "name": "federal_cty_unharm",
+    "description": "Federal elections at the county level (1953-2021, unharmonized).",
+    "path": "federal_elections/county_level/final/federal_cty_unharm"
+  },
+  {
+    "name": "federal_cty_harm",
+    "description": "Federal elections at the county level (1990-2021, harmonized).",
+    "path": "federal_elections/county_level/final/federal_cty_harm"
+  },
+  {
+    "name": "ags_crosswalks",
+    "description": "Crosswalks for municipalities (1990-2025).",
+    "path": "crosswalks/final/ags_crosswalks"
+  },
+  {
+    "name": "cty_crosswalks",
+    "description": "Crosswalks for counties (1990-2025).",
+    "path": "crosswalks/final/cty_crosswalks"
+  },
+  {
+    "name": "ags_area_pop_emp",
+    "description": "Crosswalk covariates (area, population, employment) for municipalities (1990-2025).",
+    "path": "covars_municipality/final/ags_area_pop_emp"
+  },
+  {
+    "name": "cty_area_pop_emp",
+    "description": "Crosswalk covariates (area, population, employment) for counties (1990-2025).",
+    "path": "covars_county/final/cty_area_pop_emp"
+  },
+  {
+    "name": "county_elec_unharm",
+    "description": "County (Kreistag) elections at the municipal level, unharmonized.",
+    "path": "county_elections/final/county_elec_unharm"
+  },
+  {
+    "name": "county_elec_harm_21",
+    "description": "County (Kreistag) elections, harmonized to 2021 boundaries.",
+    "path": "county_elections/final/county_elec_harm_21"
+  },
+  {
+    "name": "county_elec_harm_21_cty",
+    "description": "County (Kreistag) elections aggregated to county level, harmonized to 2021 boundaries.",
+    "path": "county_elections/final/county_elec_harm_21_cty"
+  },
+  {
+    "name": "county_elec_harm_21_muni",
+    "description": "County (Kreistag) elections at the municipal level, harmonized to 2021 boundaries.",
+    "path": "county_elections/final/county_elec_harm_21_muni"
+  },
+  {
+    "name": "european_muni_unharm",
+    "description": "European Parliament elections at the municipal level, unharmonized.",
+    "path": "european_elections/final/european_muni_unharm"
+  },
+  {
+    "name": "european_muni_harm",
+    "description": "European Parliament elections at the municipal level, harmonized.",
+    "path": "european_elections/final/european_muni_harm"
+  },
+  {
+    "name": "mayoral_unharm",
+    "description": "Mayoral election results at the municipal level, unharmonized.",
+    "path": "mayoral_elections/final/mayoral_unharm"
+  },
+  {
+    "name": "mayoral_harm",
+    "description": "Mayoral election results at the municipal level, harmonized.",
+    "path": "mayoral_elections/final/mayoral_harm"
+  },
+  {
+    "name": "mayoral_candidates",
+    "description": "Mayoral candidates (person-level).",
+    "path": "mayoral_elections/final/mayoral_candidates"
+  },
+  {
+    "name": "mayor_panel",
+    "description": "Mayor panel (person-level, one row per mayor-term).",
+    "path": "mayoral_elections/final/mayor_panel"
+  },
+  {
+    "name": "mayor_panel_harm",
+    "description": "Mayor panel (person-level, harmonized to current boundaries).",
+    "path": "mayoral_elections/final/mayor_panel_harm"
+  },
+  {
+    "name": "mayor_panel_annual",
+    "description": "Mayor panel at annual frequency (one row per municipality-year).",
+    "path": "mayoral_elections/final/mayor_panel_annual"
+  },
+  {
+    "name": "mayor_panel_annual_harm",
+    "description": "Mayor panel at annual frequency, harmonized to current boundaries.",
+    "path": "mayoral_elections/final/mayor_panel_annual_harm"
+  },
+  {
+    "name": "municipal_harm_25",
+    "description": "Local elections at the municipal level, harmonized to 2025 boundaries.",
+    "path": "municipal_elections/final/municipal_harm_25"
+  },
+  {
+    "name": "state_harm_21",
+    "description": "State elections at the municipal level, harmonized to 2021 boundaries.",
+    "path": "state_elections/final/state_harm_21"
+  },
+  {
+    "name": "state_harm_23",
+    "description": "State elections at the municipal level, harmonized to 2023 boundaries.",
+    "path": "state_elections/final/state_harm_23"
+  },
+  {
+    "name": "state_harm_25",
+    "description": "State elections at the municipal level, harmonized to 2025 boundaries.",
+    "path": "state_elections/final/state_harm_25"
+  },
+  {
+    "name": "ags_1990_to_2023_crosswalk",
+    "description": "Municipality crosswalk: 1990 boundaries to 2023 boundaries.",
+    "path": "crosswalks/final/ags_1990_to_2023_crosswalk"
+  },
+  {
+    "name": "ags_1990_to_2025_crosswalk",
+    "description": "Municipality crosswalk: 1990 boundaries to 2025 boundaries.",
+    "path": "crosswalks/final/ags_1990_to_2025_crosswalk"
+  },
+  {
+    "name": "crosswalk_ags_2021_to_2023",
+    "description": "Municipality crosswalk: AGS 2021 to AGS 2023 (targeted).",
+    "path": "crosswalks/final/crosswalk_ags_2021_to_2023"
+  },
+  {
+    "name": "crosswalk_ags_2021_2022_to_2023",
+    "description": "Municipality crosswalk: AGS 2021 and 2022 to AGS 2023 (targeted).",
+    "path": "crosswalks/final/crosswalk_ags_2021_2022_to_2023"
+  },
+  {
+    "name": "crosswalk_ags_2023_to_2025",
+    "description": "Municipality crosswalk: AGS 2023 to AGS 2025 (targeted; RDS only).",
+    "path": "crosswalks/final/crosswalk_ags_2023_to_2025"
+  },
+  {
+    "name": "crosswalk_ags_2023_24_to_2025",
+    "description": "Municipality crosswalk: AGS 2023 and 2024 to AGS 2025 (targeted; RDS only).",
+    "path": "crosswalks/final/crosswalk_ags_2023_24_to_2025"
+  },
+  {
+    "name": "crosswalk_ags_2024_to_2025",
+    "description": "Municipality crosswalk: AGS 2024 to AGS 2025 (targeted; RDS only).",
+    "path": "crosswalks/final/crosswalk_ags_2024_to_2025"
+  },
+  {
+    "name": "ags_area_pop_emp_2023",
+    "description": "Crosswalk covariates (area, population, employment) for municipalities, harmonized to 2023 boundaries.",
+    "path": "covars_municipality/final/ags_area_pop_emp_2023"
+  }
+]
