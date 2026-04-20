@@ -14,3 +14,9 @@ wheels/
 
 # uv
 uv.lock
+
+# AI assistant config (local-only)
+CLAUDE.md
+.claude/
+.cursor/
+.aider*
