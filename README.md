@@ -8,11 +8,9 @@ crosswalks. Python port of the [gerda R package](https://github.com/hhilbig/gerd
 ## Install
 
 ```bash
-pip install git+https://github.com/hhilbig/gerda-py
-pip install "gerda[polars] @ git+https://github.com/hhilbig/gerda-py"
+pip install gerda                 # base install (pandas)
+pip install "gerda[polars]"       # adds polars output support
 ```
-
-A PyPI release is planned; once published, `pip install gerda` will work.
 
 Requires Python 3.11+.
 
