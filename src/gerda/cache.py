@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from pathlib import Path
 
 import requests
 from platformdirs import user_cache_dir
 
 _TIMEOUT_SECONDS = 300
+_MAX_ATTEMPTS = 3
+_LFS_POINTER_PREFIX = b"version https://git-lfs.github.com/spec/v1"
 
 
 def cache_dir() -> Path:
@@ -37,14 +40,35 @@ def cached_download(url: str, *, refresh: bool = False, verbose: bool = False) -
             print(f"[gerda] cache hit: {path}")
         return path
 
-    if verbose:
-        print(f"[gerda] downloading {url}")
-    with requests.get(url, stream=True, timeout=_TIMEOUT_SECONDS) as response:
-        response.raise_for_status()
-        tmp = path.with_suffix(path.suffix + ".part")
-        with open(tmp, "wb") as fh:
-            for chunk in response.iter_content(chunk_size=1 << 16):
-                if chunk:
-                    fh.write(chunk)
-        tmp.replace(path)
-    return path
+    tmp = path.with_suffix(path.suffix + ".part")
+    last_error: Exception | None = None
+    for attempt in range(1, _MAX_ATTEMPTS + 1):
+        try:
+            if verbose:
+                print(f"[gerda] downloading {url} (attempt {attempt}/{_MAX_ATTEMPTS})")
+            with requests.get(url, stream=True, timeout=_TIMEOUT_SECONDS) as response:
+                response.raise_for_status()
+                with open(tmp, "wb") as fh:
+                    for chunk in response.iter_content(chunk_size=1 << 16):
+                        if chunk:
+                            fh.write(chunk)
+            if _is_lfs_pointer(tmp):
+                raise RuntimeError(
+                    f"Git LFS returned a pointer instead of dataset content for {url}"
+                )
+            tmp.replace(path)
+            return path
+        except (requests.RequestException, OSError, RuntimeError) as exc:
+            last_error = exc
+            tmp.unlink(missing_ok=True)
+            if attempt < _MAX_ATTEMPTS:
+                time.sleep(0.25 * (2 ** (attempt - 1)))
+
+    raise RuntimeError(
+        f"Failed to download a valid dataset after {_MAX_ATTEMPTS} attempts: {url}"
+    ) from last_error
+
+
+def _is_lfs_pointer(path: Path) -> bool:
+    with path.open("rb") as fh:
+        return fh.read(len(_LFS_POINTER_PREFIX)) == _LFS_POINTER_PREFIX

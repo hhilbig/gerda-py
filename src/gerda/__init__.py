@@ -5,4 +5,4 @@ from gerda.crosswalk import party_crosswalk
 from gerda.load import load
 
 __all__ = ["load", "datasets", "party_crosswalk"]
-__version__ = "0.1.0"
+__version__ = "0.2.0"

@@ -1,6 +1,6 @@
 [project]
 name = "gerda"
-version = "0.1.0"
+version = "0.2.0"
 description = "German Election Database (GERDA): lightweight Python loader for the GERDA datasets."
 readme = "README.md"
 license = "MIT"

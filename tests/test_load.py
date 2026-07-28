@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-import warnings
+import importlib
 from pathlib import Path
 
 import pandas as pd
 import pytest
 import responses
 
-import gerda.load as load_module
 from gerda import cache
 from gerda.catalog import find
 from gerda.load import load
 
 FIXTURE_DIR = Path(__file__).parent / "fixtures"
+load_module = importlib.import_module("gerda.load")
 
 
 @pytest.fixture
@@ -37,7 +37,8 @@ def _serve(name: str, payload: bytes) -> str:
 @responses.activate
 def test_strip_extension_does_not_break_load(tmp_cache, fixture_bytes):
     _serve("federal_cty_unharm", fixture_bytes)
-    df = load("federal_cty_unharm.rds")
+    with pytest.warns(FutureWarning):
+        df = load("federal_cty_unharm.rds")
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 3
 
@@ -51,29 +52,50 @@ def test_load_returns_pandas_dataframe(tmp_cache, fixture_bytes):
 
 
 @responses.activate
-def test_ags_codes_preserved_as_strings(tmp_cache, fixture_bytes):
+def test_county_codes_preserved_as_strings(tmp_cache, fixture_bytes):
     """The whole reason we use pyreadr+RDS instead of CSV: leading zeros stick."""
     _serve("federal_cty_unharm", fixture_bytes)
-    df = load("federal_cty_unharm")
-    assert df["ags"].tolist() == ["01001", "01002", "01003"]
+    with pytest.warns(FutureWarning):
+        df = load("federal_cty_unharm")
+    assert df["county_code"].tolist() == ["01001", "01002", "01003"]
     # pyreadr may return either the legacy object dtype or the new pandas StringDtype;
     # both are valid as long as values stay as strings (not coerced to ints).
-    assert pd.api.types.is_string_dtype(df["ags"]) or df["ags"].dtype == object
+    assert (
+        pd.api.types.is_string_dtype(df["county_code"])
+        or df["county_code"].dtype == object
+    )
 
 
 @responses.activate
-def test_federal_cty_unharm_adds_aliases(tmp_cache, fixture_bytes):
-    """Schema normalization: ags -> county_code, year -> election_year."""
+def test_federal_cty_unharm_adds_canonical_aliases(tmp_cache, fixture_bytes):
+    """Canonical names coexist with legacy names through Python v0.6."""
     _serve("federal_cty_unharm", fixture_bytes)
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
+    with pytest.warns(FutureWarning, match="removed in v0.7"):
         df = load("federal_cty_unharm")
 
     assert "county_code" in df.columns
     assert "election_year" in df.columns
-    assert df["county_code"].tolist() == df["ags"].tolist()
-    deprecations = [w for w in caught if issubclass(w.category, DeprecationWarning)]
-    assert any("federal_cty_unharm" in str(w.message) for w in deprecations)
+    assert "ags" in df.columns
+    assert "year" in df.columns
+    assert df["county_code"].tolist() == ["01001", "01002", "01003"]
+
+
+def test_federal_cty_unharm_preserves_both_existing_schemas():
+    df = pd.DataFrame(
+        {
+            "ags": ["01001"],
+            "county_code": ["01001"],
+            "year": [2021],
+            "election_year": [2021],
+        }
+    )
+    normalized = load_module._normalize_schema("federal_cty_unharm", df)
+    assert list(normalized.columns) == [
+        "ags",
+        "county_code",
+        "year",
+        "election_year",
+    ]
 
 
 @responses.activate
@@ -89,6 +111,19 @@ def test_cache_hit_on_second_call(tmp_cache, fixture_bytes):
     _serve("federal_cty_harm", fixture_bytes)
     load("federal_cty_harm")
     load("federal_cty_harm")
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_unreadable_cached_rds_is_redownloaded(tmp_cache, fixture_bytes):
+    cached = tmp_cache / "federal_cty_harm.rds"
+    cached.write_bytes(b"not an rds file")
+    _serve("federal_cty_harm", fixture_bytes)
+
+    df = load("federal_cty_harm")
+
+    assert len(df) == 3
+    assert cached.read_bytes() == fixture_bytes
     assert len(responses.calls) == 1
 
 

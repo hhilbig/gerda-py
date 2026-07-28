@@ -62,7 +62,17 @@ def load(
         ) from None
 
     local_path = cache.cached_download(entry["rds_url"], refresh=refresh, verbose=verbose)
-    df = _read_rds(local_path)
+    try:
+        df = _read_rds(local_path)
+    except Exception:
+        if refresh:
+            raise
+        if verbose:
+            print(f"[gerda] cached file is unreadable; re-downloading {name}")
+        local_path = cache.cached_download(
+            entry["rds_url"], refresh=True, verbose=verbose
+        )
+        df = _read_rds(local_path)
     df = _normalize_schema(name, df)
 
     if as_polars:
@@ -93,23 +103,25 @@ def _read_rds(path) -> pd.DataFrame:
 
 
 def _normalize_schema(name: str, df: pd.DataFrame) -> pd.DataFrame:
-    """Port of load_gerda_web.R:332-350 — federal_cty_unharm column aliases."""
+    """Add canonical county aliases while honoring the v0.7 removal schedule."""
     if name != "federal_cty_unharm":
         return df
 
     added = False
-    if "ags" in df.columns and "county_code" not in df.columns:
-        df = df.assign(county_code=df["ags"])
-        added = True
-    if "year" in df.columns and "election_year" not in df.columns:
-        df = df.assign(election_year=df["year"])
-        added = True
+    if "ags" in df.columns:
+        if "county_code" not in df.columns:
+            df = df.assign(county_code=df["ags"])
+            added = True
+    if "year" in df.columns:
+        if "election_year" not in df.columns:
+            df = df.assign(election_year=df["year"])
+            added = True
     if added:
         warnings.warn(
-            "'federal_cty_unharm' now exposes 'county_code' and 'election_year' to match "
-            "other county-level datasets. The upstream 'ags' and 'year' columns remain for "
-            "backwards compatibility but will be removed in v0.7.",
-            DeprecationWarning,
+            "'federal_cty_unharm' exposes canonical 'county_code' and "
+            "'election_year' aliases. Legacy 'ags' and 'year' remain available "
+            "through Python gerda 0.6 and will be removed in v0.7.",
+            FutureWarning,
             stacklevel=3,
         )
     return df

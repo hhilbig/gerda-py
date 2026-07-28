@@ -59,12 +59,43 @@ def test_refresh_bypasses_cache(tmp_cache):
 @responses.activate
 def test_http_error_raises(tmp_cache):
     url = "https://example.com/missing.rds"
-    responses.add(responses.GET, url, status=404)
+    for _ in range(cache._MAX_ATTEMPTS):
+        responses.add(responses.GET, url, status=404)
 
-    import requests
-
-    with pytest.raises(requests.HTTPError):
+    with pytest.raises(RuntimeError, match="after 3 attempts"):
         cache.cached_download(url)
+    assert len(responses.calls) == 3
+
+
+@responses.activate
+def test_transient_failure_is_retried(tmp_cache, monkeypatch):
+    url = "https://example.com/retry.rds"
+    monkeypatch.setattr(cache.time, "sleep", lambda _: None)
+    responses.add(responses.GET, url, status=503)
+    responses.add(responses.GET, url, body=b"valid-rds", status=200)
+
+    path = cache.cached_download(url)
+
+    assert path.read_bytes() == b"valid-rds"
+    assert len(responses.calls) == 2
+
+
+@responses.activate
+def test_lfs_pointer_is_rejected_and_not_cached(tmp_cache, monkeypatch):
+    url = "https://example.com/pointer.rds"
+    monkeypatch.setattr(cache.time, "sleep", lambda _: None)
+    pointer = (
+        b"version https://git-lfs.github.com/spec/v1\n"
+        b"oid sha256:abc\nsize 123\n"
+    )
+    for _ in range(cache._MAX_ATTEMPTS):
+        responses.add(responses.GET, url, body=pointer, status=200)
+
+    with pytest.raises(RuntimeError, match="valid dataset"):
+        cache.cached_download(url)
+
+    assert not cache._cache_path(url).exists()
+    assert not cache._cache_path(url).with_suffix(".rds.part").exists()
 
 
 def test_cache_path_uses_readable_basename(tmp_cache):
