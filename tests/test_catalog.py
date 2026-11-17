@@ -82,9 +82,9 @@ def test_recent_r_catalog_changes_are_present():
 
 def test_updated_municipal_metadata():
     entries = catalog.load_catalog().set_index("data_name")
-    assert "1984-2026" in entries.loc["municipal_unharm", "description"]
+    assert "1969-2026" in entries.loc["municipal_unharm", "description"]
     assert "1990-2026" in entries.loc["municipal_harm", "description"]
-    assert "1990-2026" in entries.loc["municipal_harm_25", "description"]
+    assert "1969-2026" in entries.loc["municipal_harm_25", "description"]
 
 
 def test_structured_metadata_for_new_families():
@@ -92,7 +92,7 @@ def test_structured_metadata_for_new_families():
     assert entries.loc["ltw_wkr_unharm", "geographic_level"] == "wahlkreis"
     assert entries.loc["landrat_candidates", "candidate_info"]
     assert entries.loc["landrat_candidates", "election_type"] == "landrat"
-    assert entries.loc["county_council_seats", "boundary"] == "current"
+    assert entries.loc["county_council_seats", "boundary"] == "2021"
     assert entries.loc["county_council_seats", "year_start"] == 2008
 
 
@@ -103,12 +103,31 @@ def test_rds_only_entries_do_not_advertise_csv():
     assert entry["csv_url"] is None
 
 
-def test_catalog_matches_r_0_8_1_snapshot():
+def test_catalog_matches_r_0_8_2_snapshot():
     """Guard all names, descriptions, paths, and structured metadata."""
     packaged = json.loads(
         files("gerda").joinpath("_catalog.json").read_text(encoding="utf-8")
     )
     authoritative = json.loads(
-        (FIXTURE_DIR / "r_catalog_0_8_1.json").read_text(encoding="utf-8")
+        (FIXTURE_DIR / "r_catalog_0_8_2.json").read_text(encoding="utf-8")
     )
     assert packaged == authoritative
+
+
+def test_year_ranges_match_r_0_8_2():
+    """Ranges corrected in R gerda 0.8.2 to match the published files."""
+    entries = datasets().set_index("data_name")
+    expected = {
+        "state_unharm": (1946, 2026),
+        "state_harm": (1946, 2025),
+        "federal_cty_unharm": (1953, 2025),
+        "european_muni_harm": (2009, 2024),
+        "mayoral_unharm": (1945, 2026),
+    }
+    for name, (start, end) in expected.items():
+        assert entries.loc[name, "year_start"] == start, name
+        assert entries.loc[name, "year_end"] == end, name
+
+
+def test_no_current_boundary_label():
+    assert "current" not in set(datasets()["boundary"])

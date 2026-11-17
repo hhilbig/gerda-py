@@ -82,3 +82,15 @@ def test_empty_input():
 def test_returns_pd_series():
     out = party_crosswalk(["cdu"], "party_name_short")
     assert isinstance(out, pd.Series)
+
+
+def test_parties_not_in_parlgov_have_names_only():
+    """BSW and WerteUnion were added in R gerda 0.8.2 with names only."""
+    short = party_crosswalk(["bsw", "werteunion"], "party_name_short")
+    assert list(short) == ["BSW", "WerteUnion"]
+    assert party_crosswalk(["bsw", "werteunion"], "left_right").isna().all()
+    assert party_crosswalk(["bsw"], "family_name").isna().all()
+
+
+def test_afd_left_right_refreshed():
+    assert party_crosswalk(["afd"], "left_right").iloc[0] == pytest.approx(8.8)

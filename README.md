@@ -68,8 +68,8 @@ formats, and whether they contain candidate information.
   year; long files additionally identify vote type and party.
 - `landrat_unharm`: county-executive elections, identified by `ags`, election
   date, and round. `landrat_candidates` adds person-level candidates.
-- `county_council_seats`: annual county seat composition on fixed current
-  county boundaries, identified by county and year.
+- `county_council_seats`: annual county seat composition on 2021 county
+  boundaries, identified by county and year.
 - `federal_cty_unharm`: use `county_code` and `election_year`. The legacy
   aliases `ags` and `year` remain through Python gerda 0.6 and will be removed
   in v0.7.
@@ -94,6 +94,9 @@ gerda.party_crosswalk(["cdu", "afd"], "family_name_short")
 
 See `gerda.crosswalk.destinations()` for the full list of 21 destination
 columns (party names, family, ideology scales, identifiers).
+
+Parties that ParlGov does not cover, including BSW and WerteUnion, return their
+names but missing values for party family, ideology scales, and identifiers.
 
 ## Scope
 
